@@ -7,7 +7,8 @@ using UnityEngine;
 
 public partial struct MovementSystem : ISystem
 {
-    
+ 
+    [BurstCompile]
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<GameStateData>();
@@ -31,7 +32,7 @@ public partial struct MovementSystem : ISystem
             return;
         }
 
-        foreach (var playerTransform in SystemAPI.Query<RefRW<LocalTransform>>().WithAll<PlayerMoveSpeed>())
+        foreach (var playerTransform in SystemAPI.Query<RefRW<LocalTransform>>().WithAll<PlayerMoveData>())
         {
             playerTransform.ValueRW.Position = playerTransform.ValueRO.Position + input;
         }
@@ -39,14 +40,6 @@ public partial struct MovementSystem : ISystem
     
 }
 
-//todo: it movement will add 
-public struct MoveChunk : IJobChunk
-{
-    public void Execute(in ArchetypeChunk chunk, int unfilteredChunkIndex, bool useEnabledMask, in v128 chunkEnabledMask)
-    {
-        
-    }
-}
 
 
 public enum GameState
