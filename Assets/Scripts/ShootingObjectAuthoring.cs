@@ -24,12 +24,13 @@ public class ShootingObjectAuthoring : MonoBehaviour
 
     
 }
-public struct ShootingObject : IComponentData
+public struct ShootingObject : IComponentData ,IEnableableComponent
 {
     public float DamageAmount;
+    public float itemHitAmount;
         
 }
-public struct MoveObject :  IComponentData
+public struct MoveObject :  IComponentData ,IEnableableComponent
 {
     public float Velocity;
 }

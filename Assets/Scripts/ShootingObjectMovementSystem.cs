@@ -1,7 +1,9 @@
-﻿using Unity.Burst;
+﻿using System.Runtime.InteropServices;
+using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
+using UnityEngine;
 
 
 public partial struct ShootingObjectMovementSystem : ISystem
@@ -24,8 +26,10 @@ public partial struct ShootingObjectMovementSystem : ISystem
             DeltaTime = deltaTime
         };
         job.Schedule();
+   
     }
 }
+
 
 public partial struct BulletShootingObjectJob : IJobEntity
 {
@@ -39,5 +43,7 @@ public partial struct BulletShootingObjectJob : IJobEntity
         transform.Rotation = DirectionVector;
         
         transform.Position += (objectPos.Velocity*DeltaTime);
+        
+        
     }
 }

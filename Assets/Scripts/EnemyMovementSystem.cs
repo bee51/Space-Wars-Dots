@@ -1,11 +1,15 @@
-﻿using Unity.Burst;
+﻿using System.Runtime.InteropServices;
+using Unity.Burst;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
+using UnityEngine;
 using UnityEngine.Jobs;
 
 
 [UpdateBefore(typeof(TransformSystemGroup))]
+[UpdateAfter(typeof(EnemySpawnSystem))]
 public partial struct EnemyMovementSystem : ISystem
 {
     [BurstCompile]
@@ -20,24 +24,44 @@ public partial struct EnemyMovementSystem : ISystem
         Entity entity=SystemAPI.GetSingletonEntity<PlayerMoveData>();
         float3 pos = SystemAPI.GetComponent<LocalTransform>(entity).Position;
         float deltaTime = SystemAPI.Time.DeltaTime;
+        var shootQuery = SystemAPI.QueryBuilder().WithAll<LocalTransform,ShootingObject>().Build();
+        
         var job = new EnemyMoveJob
         {
-            enemyPos = pos,
-            deltaTime=deltaTime
+            ShooterQuery = shootQuery.ToComponentDataArray<LocalTransform>(state.WorldUpdateAllocator),
+            PlayerPos = pos,
+            DeltaTime=deltaTime
         };
         job.ScheduleParallel();
     }
 
 }
 
+
+[StructLayout(LayoutKind.Auto)]
 public partial struct EnemyMoveJob : IJobEntity
 {
-    public float3 enemyPos;
-    public float deltaTime;
-    public void Execute(ref LocalTransform transform, in Enemy enemy)
+    public float3 PlayerPos;
+    public float DeltaTime;
+    public NativeArray<LocalTransform> ShooterQuery;
+    public void Execute(ref LocalTransform transform, ref Enemy enemy)
     {
-        var divideAmount = transform.Position - enemyPos;
+        if (enemy.LiveState == LivingState.Death)
+        {
+            return;
+        }
+        var divideAmount = transform.Position - PlayerPos;
         divideAmount=math.normalize(divideAmount);
-        transform.Position -= divideAmount*deltaTime;
+        transform.Position -= divideAmount*DeltaTime;
+        
+        foreach (var myTransform in ShooterQuery)
+        {
+            if (math.distance( transform.Position,myTransform.Position)<3f)
+            {
+                
+                enemy.LiveState = LivingState.Death;
+                return;
+            }
+        }
     }
 }
