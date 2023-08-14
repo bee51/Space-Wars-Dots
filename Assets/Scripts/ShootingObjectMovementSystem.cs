@@ -1,7 +1,5 @@
 ﻿using Unity.Burst;
-using Unity.Collections;
 using Unity.Entities;
-using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Transforms;
 
@@ -11,7 +9,7 @@ public partial struct ShootingObjectMovementSystem : ISystem
     [BurstCompile]
     public void OnCreate(ref SystemState state)
     {
-        state.RequireForUpdate<GameDataAuthoring.GameData>();
+        state.RequireForUpdate<GameData>();
     }
 
     [BurstCompile]
@@ -19,8 +17,10 @@ public partial struct ShootingObjectMovementSystem : ISystem
     {
         
         var deltaTime = SystemAPI.Time.DeltaTime;
+        var player = SystemAPI.GetComponentRO<LocalTransform>(SystemAPI.GetSingletonEntity<PlayerMoveData>());
         var job = new BulletShootingObjectJob
         {
+            DirectionVector = player.ValueRO.Rotation,
             DeltaTime = deltaTime
         };
         job.Schedule();
@@ -30,8 +30,14 @@ public partial struct ShootingObjectMovementSystem : ISystem
 public partial struct BulletShootingObjectJob : IJobEntity
 {
     public float DeltaTime;
-    public void Execute(ref LocalTransform transform , in ShootingObjectAuthoring.MoveObject objectPos)
+
+    public quaternion DirectionVector;
+    //todo: it will add spawning road
+
+    public void Execute(ref LocalTransform transform , in MoveObject objectPos)
     {
-        transform.Position.x += (objectPos.Velocity*DeltaTime);
+        transform.Rotation = DirectionVector;
+        
+        transform.Position += (objectPos.Velocity*DeltaTime);
     }
 }

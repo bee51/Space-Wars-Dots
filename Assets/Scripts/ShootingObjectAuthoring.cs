@@ -21,15 +21,15 @@ public class ShootingObjectAuthoring : MonoBehaviour
             });
         }
     }
-    public struct ShootingObject : IComponentData
-    {
-        public float DamageAmount;
+
+    
+}
+public struct ShootingObject : IComponentData
+{
+    public float DamageAmount;
         
-    }
-    public struct MoveObject :  IComponentData
-    {
-        public float Velocity;
-    }
-    
-    
+}
+public struct MoveObject :  IComponentData
+{
+    public float Velocity;
 }

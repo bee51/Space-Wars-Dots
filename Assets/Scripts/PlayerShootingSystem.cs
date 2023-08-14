@@ -14,7 +14,7 @@ namespace DefaultNamespace
         public void OnCreate(ref SystemState state)
         {
             state.RequireForUpdate<PlayerMoveData>();
-            state.RequireForUpdate<GameDataAuthoring.GameData>();
+            state.RequireForUpdate<GameData>();
         }
 
         [BurstCompile]
@@ -24,7 +24,7 @@ namespace DefaultNamespace
             {
                 return;
             }
-            var config = SystemAPI.GetSingleton<GameDataAuthoring.GameData>();
+            var config = SystemAPI.GetSingleton<GameData>();
             var playerEntity = SystemAPI.GetSingletonEntity<PlayerMoveData>();
             var playerMoveData =SystemAPI.GetComponentRO<LocalTransform>(playerEntity);
 
