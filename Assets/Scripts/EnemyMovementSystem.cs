@@ -24,18 +24,23 @@ public partial struct EnemyMovementSystem : ISystem
         Entity entity=SystemAPI.GetSingletonEntity<PlayerMoveData>();
         float3 pos = SystemAPI.GetComponent<LocalTransform>(entity).Position;
         float deltaTime = SystemAPI.Time.DeltaTime;
-        var shootQuery = SystemAPI.QueryBuilder().WithAll<LocalTransform,ShootingObject>().Build();
+        EntityQuery shootQuery = SystemAPI.QueryBuilder().WithAll<LocalTransform,ShootingObject>().Build();
         
         var job = new EnemyMoveJob
         {
-            ShooterQuery = shootQuery.ToComponentDataArray<LocalTransform>(state.WorldUpdateAllocator),
+            ShooterTransforms = shootQuery.ToComponentDataArray<LocalTransform>(state.WorldUpdateAllocator),
             PlayerPos = pos,
-            DeltaTime=deltaTime
+            DeltaTime=deltaTime,
+   
+            
         };
+        
         job.ScheduleParallel();
+        
     }
 
 }
+
 
 
 [StructLayout(LayoutKind.Auto)]
@@ -43,7 +48,8 @@ public partial struct EnemyMoveJob : IJobEntity
 {
     public float3 PlayerPos;
     public float DeltaTime;
-    public NativeArray<LocalTransform> ShooterQuery;
+    public NativeArray<LocalTransform> ShooterTransforms;
+
     public void Execute(ref LocalTransform transform, ref Enemy enemy)
     {
         if (enemy.LiveState == LivingState.Death)
@@ -53,15 +59,7 @@ public partial struct EnemyMoveJob : IJobEntity
         var divideAmount = transform.Position - PlayerPos;
         divideAmount=math.normalize(divideAmount);
         transform.Position -= divideAmount*DeltaTime;
-        
-        foreach (var myTransform in ShooterQuery)
-        {
-            if (math.distance( transform.Position,myTransform.Position)<3f)
-            {
-                
-                enemy.LiveState = LivingState.Death;
-                return;
-            }
-        }
+        int a = 0;
+     
     }
 }

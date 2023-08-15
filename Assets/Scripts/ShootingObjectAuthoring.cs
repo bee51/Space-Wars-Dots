@@ -5,6 +5,8 @@ public class ShootingObjectAuthoring : MonoBehaviour
 {
     public float speed;
     public float damage;
+    public float totalTime;
+
     private class ShootingObjectBaker : Baker<ShootingObjectAuthoring>
     {
         
@@ -14,10 +16,12 @@ public class ShootingObjectAuthoring : MonoBehaviour
             AddComponent(entity, new ShootingObject
             {
                 DamageAmount = authoring.damage
+                
             });
             AddComponent(entity,new MoveObject
             {
-                Velocity = authoring.speed
+                Velocity = authoring.speed,
+                Time= authoring.totalTime
             });
         }
     }
@@ -27,10 +31,12 @@ public class ShootingObjectAuthoring : MonoBehaviour
 public struct ShootingObject : IComponentData ,IEnableableComponent
 {
     public float DamageAmount;
-    public float itemHitAmount;
+    public float İtemHitAmount;
         
 }
 public struct MoveObject :  IComponentData ,IEnableableComponent
 {
     public float Velocity;
+    public float CurrentTime;
+    public float Time;
 }

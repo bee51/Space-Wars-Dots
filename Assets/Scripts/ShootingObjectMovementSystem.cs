@@ -17,16 +17,15 @@ public partial struct ShootingObjectMovementSystem : ISystem
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
-        
         var deltaTime = SystemAPI.Time.DeltaTime;
         var player = SystemAPI.GetComponentRO<LocalTransform>(SystemAPI.GetSingletonEntity<PlayerMoveData>());
         var job = new BulletShootingObjectJob
         {
-            DirectionVector = player.ValueRO.Rotation,
-            DeltaTime = deltaTime
+            DeltaTime = deltaTime,
+            PlayerTransform = player.ValueRO
         };
         job.Schedule();
-   
+        
     }
 }
 
@@ -34,16 +33,13 @@ public partial struct ShootingObjectMovementSystem : ISystem
 public partial struct BulletShootingObjectJob : IJobEntity
 {
     public float DeltaTime;
-
-    public quaternion DirectionVector;
+    public LocalTransform PlayerTransform;
     //todo: it will add spawning road
 
-    public void Execute(ref LocalTransform transform , in MoveObject objectPos)
+    public void Execute(ref LocalTransform transform, in MoveObject objectPos, in ShootingObject shootingObject)
     {
-        transform.Rotation = DirectionVector;
-        
-        transform.Position += (objectPos.Velocity*DeltaTime);
-        
-        
+        Debug.Log("it is entered");
+        transform.Rotation = PlayerTransform.Rotation;
+        transform.Position += (objectPos.Velocity * DeltaTime);
     }
 }

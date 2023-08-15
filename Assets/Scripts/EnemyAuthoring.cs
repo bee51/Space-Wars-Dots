@@ -16,7 +16,7 @@ public class EnemyAuthoring : MonoBehaviour
     }
 }
 
-public struct Enemy : IComponentData
+public struct Enemy : IComponentData,IEnableableComponent
 {
     public LivingState LiveState;
 }
