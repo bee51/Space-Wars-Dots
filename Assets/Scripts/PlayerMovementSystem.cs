@@ -29,17 +29,25 @@ public partial struct PlayerMovementSystem : ISystem
        
         var input = new float3(horizontal, 0, vertical) * SystemAPI.Time.DeltaTime * 5;
         
-      /*  if (input.Equals(float3.zero))
-        {
-            return;
-        }
-*/
+        
       //todo: it will add rotation
-        foreach (var playerTransform in SystemAPI.Query<RefRW<LocalTransform>>().WithAll<PlayerMoveData>())
+        foreach (var playerTransform in SystemAPI.Query<RefRW<LocalTransform>>().WithAll<PlayerData>())
         {
             playerTransform.ValueRW.Position = playerTransform.ValueRO.Position + input;
+            playerTransform.ValueRW.Rotation = LaMouse(playerTransform.ValueRO.Position);
 
         }
+    }
+
+    private quaternion LaMouse(Vector3 pos)
+    {
+        Vector2 direction = Input.mousePosition - pos;
+
+
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        Quaternion rotation = Quaternion.AngleAxis(angle - 90, Vector3.up);
+
+        return rotation;
     }
     
 }

@@ -18,7 +18,7 @@ public partial struct ShootingObjectMovementSystem : ISystem
     public void OnUpdate(ref SystemState state)
     {
         var deltaTime = SystemAPI.Time.DeltaTime;
-        var player = SystemAPI.GetComponentRO<LocalTransform>(SystemAPI.GetSingletonEntity<PlayerMoveData>());
+        var player = SystemAPI.GetComponentRO<LocalTransform>(SystemAPI.GetSingletonEntity<PlayerData>());
         var job = new BulletShootingObjectJob
         {
             DeltaTime = deltaTime,
@@ -29,6 +29,7 @@ public partial struct ShootingObjectMovementSystem : ISystem
     }
 }
 
+[BurstCompile]
 
 public partial struct BulletShootingObjectJob : IJobEntity
 {
@@ -38,8 +39,7 @@ public partial struct BulletShootingObjectJob : IJobEntity
 
     public void Execute(ref LocalTransform transform, in MoveObject objectPos, in ShootingObject shootingObject)
     {
-        Debug.Log("it is entered");
         transform.Rotation = PlayerTransform.Rotation;
-        transform.Position += (objectPos.Velocity * DeltaTime);
+        transform.Position += (objectPos.Velocity * DeltaTime*new float3(1,0,1));
     }
 }

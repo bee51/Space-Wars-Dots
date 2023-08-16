@@ -15,13 +15,13 @@ public partial struct EnemyMovementSystem : ISystem
     [BurstCompile]
     public void OnCreate(ref SystemState state)
     {
-        state.RequireForUpdate<PlayerMoveData>();
+        state.RequireForUpdate<PlayerData>();
     }
 
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
-        Entity entity=SystemAPI.GetSingletonEntity<PlayerMoveData>();
+        Entity entity=SystemAPI.GetSingletonEntity<PlayerData>();
         float3 pos = SystemAPI.GetComponent<LocalTransform>(entity).Position;
         float deltaTime = SystemAPI.Time.DeltaTime;
         EntityQuery shootQuery = SystemAPI.QueryBuilder().WithAll<LocalTransform,ShootingObject>().Build();

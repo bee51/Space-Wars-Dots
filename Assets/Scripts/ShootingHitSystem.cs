@@ -6,13 +6,7 @@ using Unity.Transforms;
 [UpdateAfter(typeof(ShootingObjectMovementSystem))]
 public partial struct ShootingHitSystem : ISystem
 {
-    EntityCommandBufferSystem entityCommandBufferSystem;
-
-    public  void OnCreate()
-    {
-        // EntityCommandBufferSystem oluşturma
-    }
-
+    
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
@@ -32,17 +26,6 @@ public partial struct ShootingHitSystem : ISystem
         }
         
         
-
-    }
-}
-[BurstCompile]
-[WithDisabled(typeof(MoveObject))]
-public partial struct SpawnJob : IJobEntity
-{
-    public EntityCommandBuffer.ParallelWriter CommandBuffer;
-
-    public void Execute(ref LocalTransform obj , ref Entity item)
-    {
 
     }
 }

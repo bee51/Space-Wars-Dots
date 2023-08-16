@@ -5,6 +5,7 @@ using Unity.Transforms;
 
 
 [UpdateBefore(typeof(EnemyMovementSystem))]
+[BurstCompile]
 public partial struct EnemySpawnSystem : ISystem
 {
     public float timeStart;
@@ -18,21 +19,32 @@ public partial struct EnemySpawnSystem : ISystem
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
-        var data = SystemAPI.GetSingleton<GameData>();
+        var data = SystemAPI.GetSingleton<GameData>().EnemyObject;
+        var ecbSingleton = SystemAPI.GetSingleton<BeginInitializationEntityCommandBufferSystem.Singleton>();
         if (timeStart >= 0)
         {
             timeStart -= SystemAPI.Time.DeltaTime;
             return;
         }
 
-
-          foreach (var localTransform in SystemAPI.Query<RefRO<LocalTransform>>().WithAll<SpawnPoint>())
+        var job = new EnemySpawnJob
         {
-      var spawnedEntity=state.EntityManager.Instantiate(data.EnemyObject);
-      var enemyTransform=SystemAPI.GetComponentRW<LocalTransform>(spawnedEntity);
-      enemyTransform.ValueRW.Position = localTransform.ValueRO.Position;
-        }
-        timeStart = 3f;
+            SpawnEnemy = data,
+            ECB = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged)
+        };
+        job.Schedule();
+        timeStart = 1f;
+    }
+}
+[BurstCompile]
+public partial struct EnemySpawnJob : IJobEntity
+{
+    public EntityCommandBuffer ECB;
+    public Entity SpawnEnemy;
 
+    public void Execute(ref LocalTransform transform, in SpawnPoint point)
+    {
+        var spawnedEntity = ECB.Instantiate(SpawnEnemy);
+       ECB.SetComponent(spawnedEntity,transform);
     }
 }

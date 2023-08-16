@@ -10,7 +10,7 @@ public partial struct PlayerShootingSystem : ISystem
     [BurstCompile]
     public void OnCreate(ref SystemState state)
     {
-        state.RequireForUpdate<PlayerMoveData>();
+        state.RequireForUpdate<PlayerData>();
         state.RequireForUpdate<GameData>();
     }
 
@@ -22,7 +22,7 @@ public partial struct PlayerShootingSystem : ISystem
             return;
         }
         var config = SystemAPI.GetSingleton<GameData>();
-        var playerEntity = SystemAPI.GetSingletonEntity<PlayerMoveData>();
+        var playerEntity = SystemAPI.GetSingletonEntity<PlayerData>();
         var playerMoveData =SystemAPI.GetComponentRO<LocalTransform>(playerEntity);
 
         var entity=state.EntityManager.Instantiate(config.ShootingObjectBullet,1,Allocator.Temp);
@@ -32,9 +32,6 @@ public partial struct PlayerShootingSystem : ISystem
                 
             transform.ValueRW.Position = playerMoveData.ValueRO.Position;
         }
-            
-            
-            
     }
 
 }
