@@ -13,8 +13,7 @@ public partial struct PlayerMovementSystem : ISystem
     {
         state.RequireForUpdate<GameStateData>();
     }
-
-    [BurstCompile]
+    
     public void OnUpdate(ref SystemState state)
     {
         var gameState=SystemAPI.GetSingleton<GameStateData>().Value;
@@ -34,24 +33,29 @@ public partial struct PlayerMovementSystem : ISystem
         foreach (var playerTransform in SystemAPI.Query<RefRW<LocalTransform>>().WithAll<PlayerData>())
         {
             playerTransform.ValueRW.Position = playerTransform.ValueRO.Position + input;
-            playerTransform.ValueRW.Rotation = LaMouse(playerTransform.ValueRO.Position);
+            float4 returnValue = SendRay().value;
+            playerTransform.ValueRW.Rotation.value = returnValue;
 
         }
     }
 
-    private quaternion LaMouse(Vector3 pos)
+    public quaternion SendRay()
     {
-        Vector2 direction = Input.mousePosition - pos;
+        Vector3 mouse = Input.mousePosition;
+        Ray castPoint = Camera.main.ScreenPointToRay(mouse);
+        RaycastHit hit;
+        if (Physics.Raycast(castPoint, out hit))
+        {
+        }
 
+        return quaternion.LookRotation(hit.point, new float3(0, 1, 0));
+        
 
-        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-        Quaternion rotation = Quaternion.AngleAxis(angle - 90, Vector3.up);
-
-        return rotation;
     }
+
+ 
     
 }
-
 
 
 public enum GameState
