@@ -1,4 +1,5 @@
 ﻿using Unity.Entities;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class ShootingObjectAuthoring : MonoBehaviour
@@ -32,11 +33,12 @@ public struct ShootingObject : IComponentData ,IEnableableComponent
 {
     public float DamageAmount;
     public float İtemHitAmount;
-        
+    public bool IsFired;
+
 }
 public struct MoveObject :  IComponentData ,IEnableableComponent
 {
-    public float Velocity;
+    public float3 Velocity;
     public float CurrentTime;
     public float Time;
 }

@@ -4,8 +4,6 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
-using UnityEngine;
-using UnityEngine.Jobs;
 
 
 [UpdateBefore(typeof(TransformSystemGroup))]
@@ -47,6 +45,7 @@ public partial struct EnemyMovementSystem : ISystem
 public partial struct EnemyMoveJob : IJobEntity
 {
     public float3 PlayerPos;
+    
     public float DeltaTime;
     public NativeArray<LocalTransform> ShooterTransforms;
 
@@ -59,6 +58,7 @@ public partial struct EnemyMoveJob : IJobEntity
         var divideAmount = transform.Position - PlayerPos;
         divideAmount=math.normalize(divideAmount);
         transform.Position -= divideAmount*DeltaTime;
+        transform.Rotation= quaternion.LookRotation(PlayerPos,new float3(0,1,0));
         int a = 0;
      
     }

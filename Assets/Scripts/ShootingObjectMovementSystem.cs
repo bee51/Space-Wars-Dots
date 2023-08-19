@@ -22,24 +22,31 @@ public partial struct ShootingObjectMovementSystem : ISystem
         var job = new BulletShootingObjectJob
         {
             DeltaTime = deltaTime,
+            ForwardPos = player.ValueRO.Forward(), 
             PlayerTransform = player.ValueRO
         };
         job.Schedule();
-        
     }
 }
 
 [BurstCompile]
-
+[StructLayout(LayoutKind.Auto)]
 public partial struct BulletShootingObjectJob : IJobEntity
 {
     public float DeltaTime;
-    public LocalTransform PlayerTransform;
-    //todo: it will add spawning road
 
-    public void Execute(ref LocalTransform transform, in MoveObject objectPos, in ShootingObject shootingObject)
+    public float3 ForwardPos;
+    public LocalTransform PlayerTransform;
+
+    public void Execute(ref LocalTransform transform, ref MoveObject objectPos, ref ShootingObject shootingObject)
     {
-        transform.Rotation = PlayerTransform.Rotation;
-        transform.Position += (objectPos.Velocity * DeltaTime*new float3(1,0,1));
+        if (!shootingObject.IsFired)
+        {
+            shootingObject.IsFired = true;
+            objectPos.Velocity = ForwardPos;
+            transform.Rotation = PlayerTransform.Rotation;
+        }
+
+        transform.Position += objectPos.Velocity * DeltaTime * new float3(1, 0, 1)*5;
     }
 }

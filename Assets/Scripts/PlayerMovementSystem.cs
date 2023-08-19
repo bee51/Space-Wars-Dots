@@ -1,5 +1,4 @@
 using Unity.Burst;
-using Unity.Burst.Intrinsics;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
@@ -46,6 +45,7 @@ public partial struct PlayerMovementSystem : ISystem
         RaycastHit hit;
         if (Physics.Raycast(castPoint, out hit))
         {
+            
         }
 
         return quaternion.LookRotation(hit.point, new float3(0, 1, 0));
